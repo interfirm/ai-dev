@@ -1,0 +1,63 @@
+
+手順
+
+@Mac
+# MLOps的な区分：AIサーバにsshで入る準備
+vim ~/.ssh/config
+```
+Host ai-dev1
+    HostName 35.75.78.39
+    User ec2-user
+    Port 22
+    AddKeysToAgent yes
+    UseKeychain yes
+    IdentityFile ~/.ssh/ai-dev1.pem
+```
+ssh ai-dev1
+
+@ai-dev1
+# MLOps的な区分：AIサーバでollamaをコンテナ起動
+docker run -d --gpus all \
+  --name ollama \
+  --restart=always \
+  -p 11434:11434 \
+  -v ollama:/root/.ollama \
+  ollama/ollama
+
+コンテナに入ってモデルを pull：
+docker exec -it ollama bash
+
+@ollama container
+# MLOps的な区分：ollamaでモデルを準備
+# 軽めでT4向き（4.7GBくらい）　　　　　　こっちは頭よくなかった
+ollama pull llava:7b   # LLaVA 1.6 7B [oai_citation:2‡Ollama](https://ollama.com/library/llava%3A7b?utm_source=chatgpt.com)
+
+# もう少し強いVisionモデルが欲しければ　こっちはまあまあ
+ollama pull llama3.2-vision:11b   # Meta系のVisionモデル [oai_citation:3‡Ollama](https://ollama.com/library/?utm_source=chatgpt.com)
+
+# ※T4 16GBなら llava:7b は余裕。llama3.2-vision:11b もギリいける想定。
+
+# 普通の言語モデル
+ollama pull llama3.1:8b
+
+# ollamaが外からアクセスされる準備OK
+
+@aws 
+# aws的な準備
+# MLOps的な区分：セキュリティグループ設定 
+# インスタンスのインバウンドルールにカスタムTCP 11434 ポートを追加して保存
+# インスタンスが外部から:11434ポートでollamaにアクセス可能になる
+
+@ai-dev1
+# コンテナのセットアップをやり直したい場合
+# MLOps的な区分：ollamaコンテナの停止と削除
+docker stop ollama
+docker rm ollama
+
+# ---------------------------------------------------------------
+
+@Mac
+
+(base) 13:50:38 kurokawadaisuke@MacBook-Pro:~/projects/pllama-test
+pllama-test $ ./test_ollama_vision.sh
+

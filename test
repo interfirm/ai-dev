@@ -1,0 +1,24 @@
+test.jpgをai-dev1に置いたollama+visionに投げてみた
+./test_ollama_vision.sh
+ピンクレモネード：ブルーベリーだけど実がピンク色の品種
+
+↓回答　
+
+{
+    "model":"llava:7b",
+    "created_at":"2025-11-17T04:17:03.422142808Z",
+    "message":{
+        "role":"assistant",
+        "content":"{\"answer\": \"紫色の蓮団\", \"hints\": [\"食物です\", \"水や茶に使われます\", \"熟悪とも呼ばれるかもしれない\"]}"
+    },
+    "done":true,
+    "done_reason":"stop",
+    "total_duration":1424556735,
+    "load_duration":55452232,
+    "prompt_eval_count":1081,
+    "prompt_eval_duration":19138257,
+    "eval_count":59,
+    "eval_duration":1298300343
+}
+
+ちょっと厳しい
